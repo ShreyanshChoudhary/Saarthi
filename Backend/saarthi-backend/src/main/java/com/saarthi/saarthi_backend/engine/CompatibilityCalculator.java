@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.saarthi.saarthi_backend.constants.OrganType.*;
+
 @Component
 public class CompatibilityCalculator {
 
@@ -100,6 +102,7 @@ public class CompatibilityCalculator {
             case KIDNEY, PANCREAS -> 0.40;
             case HEART, LUNGS -> 0.15;
             case LIVER -> 0.10;
+            case CORNEA -> 0.0; // Avascular tissue; immune-privileged, HLA matching not required
         };
     }
 
@@ -164,4 +167,10 @@ public class CompatibilityCalculator {
         for (String donorAntigen : donorAlleles) {
             if (availableRecipientAlleles.contains(donorAntigen)) {
                 matches++;
-                available
+                availableRecipientAlleles.remove(donorAntigen);
+            }
+        }
+
+        return matches / 2.0; // Normalized 0.0 (0/2 match), 0.5 (1/2 match), or 1.0 (2/2 match)
+    }
+}
